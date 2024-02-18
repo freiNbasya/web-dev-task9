@@ -1,0 +1,32 @@
+html
+  head
+    title Chat
+  body
+    #messages
+    input(type='text', id='message', placeholder='Message')
+    button(id='send') Send
+
+    script.
+      const socket = new WebSocket('ws://localhost:4000');
+
+      socket.onopen = function() {
+          console.log('Connected to server');
+      };
+
+      socket.onmessage = function(event) {
+          const messages = document.getElementById('messages');
+          const message = document.createElement('div');
+          message.textContent = event.data;
+          messages.appendChild(message);
+      };
+
+      document.getElementById('send').addEventListener('click', function() {
+          const messageInput = document.getElementById('message');
+          const message = messageInput.value;
+          const messages = document.getElementById('messages');
+          const sentMessage = document.createElement('div');
+          sentMessage.textContent = `You: ${message}`;
+          messages.appendChild(sentMessage);
+          socket.send(message);
+          messageInput.value = '';
+      });
